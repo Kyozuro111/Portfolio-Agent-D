@@ -224,7 +224,7 @@ For questions, feedback, or issues:
 
 **Kyozuro**
 
-Built for the [Sentient](https://sentient.io/) community.
+Built for the [Sentient](https://x.com/SentientAGI) community.
 
 ---
 
