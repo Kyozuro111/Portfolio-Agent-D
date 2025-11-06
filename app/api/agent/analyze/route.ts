@@ -103,39 +103,48 @@ export async function POST(request: NextRequest) {
             timestamp: Date.now(),
           })
 
-          // Try LLM providers in order of preference (same as chat route)
+          // Try LLM providers in order of preference with automatic fallback
           const fireworksKey = userKeys.get("FIREWORKS_API_KEY") || ""
           const groqKey = userKeys.get("GROQ_API_KEY") || ""
           const openrouterKey = userKeys.get("OPENROUTER_API_KEY") || ""
           const aimlKey = userKeys.get("AIML_API_KEY") || ""
 
-          let llm: LLMAgent | null = null
-          if (fireworksKey) {
-            llm = new LLMAgent(fireworksKey, "accounts/fireworks/models/llama-v3p1-70b-instruct", "fireworks")
-          } else if (groqKey) {
-            llm = new LLMAgent(groqKey, "llama-3.3-70b-versatile", "groq")
-          } else if (openrouterKey) {
-            llm = new LLMAgent(openrouterKey, "meta-llama/llama-3.1-70b-instruct", "openrouter")
-          } else if (aimlKey) {
-            llm = new LLMAgent(aimlKey, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "aiml")
+          const providers = [
+            { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
+            { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" },
+            { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" },
+            { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" },
+          ]
+
+          let llmResponse = null
+          let lastError: Error | null = null
+
+          // Try each provider in order until one succeeds
+          for (const provider of providers) {
+            if (!provider.key) continue
+
+            try {
+              console.log(`[portfolio-agent] [${requestId}] Trying ${provider.name}...`)
+              const llm = new LLMAgent(provider.key, provider.model, provider.name as any)
+              llmResponse = await llm.analyze(result.blackboard)
+              console.log(`[portfolio-agent] [${requestId}] ${provider.name} analysis successful`)
+              break
+            } catch (error) {
+              console.error(`[portfolio-agent] [${requestId}] ${provider.name} failed:`, error)
+              lastError = error instanceof Error ? error : new Error(String(error))
+              // Continue to next provider
+            }
           }
 
-          if (llm) {
-            try {
-              const llmResponse = await llm.analyze(result.blackboard)
-              result.blackboard.llm_insights = llmResponse
-            } catch (error) {
-              console.error(`[portfolio-agent] [${requestId}] LLM failed:`, error)
-              result.blackboard.llm_insights = {
-                insights: ["LLM analysis unavailable - API error"],
-                actions: [],
-                assumptions: [],
-                constraints: [],
-              }
-            }
+          if (llmResponse) {
+            result.blackboard.llm_insights = llmResponse
           } else {
             result.blackboard.llm_insights = {
-              insights: ["LLM analysis skipped - no API key configured"],
+              insights: [
+                lastError
+                  ? "LLM analysis unavailable - all providers failed. Please check your API keys and billing status."
+                  : "LLM analysis skipped - no API key configured",
+              ],
               actions: [],
               assumptions: [],
               constraints: [],

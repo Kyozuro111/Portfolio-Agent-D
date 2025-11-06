@@ -81,33 +81,33 @@ export function Header() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="space-y-2">
+            <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Sparkles className="h-4 w-4 text-primary" />
                     <span className="font-medium">ROMA Framework</span>
                   </div>
                   <p className="text-sm text-muted-foreground ml-6">
                     Plan-based execution system for intelligent portfolio analysis and decision-making
-                  </p>
-                </div>
-                <div className="space-y-2">
+              </p>
+            </div>
+            <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Zap className="h-4 w-4 text-primary" />
                     <span className="font-medium">OpenDeepSearch</span>
                   </div>
                   <p className="text-sm text-muted-foreground ml-6">
                     Real-time news research with sentiment analysis and portfolio impact scoring
-                  </p>
-                </div>
-                <div className="space-y-2">
+              </p>
+            </div>
+            <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Database className="h-4 w-4 text-primary" />
                     <span className="font-medium">Multi-Source Data</span>
                   </div>
                   <p className="text-sm text-muted-foreground ml-6">
                     CoinGecko, CoinMarketCap, Birdeye for prices. Serper, Jina, Tavily for news research
-                  </p>
-                </div>
+              </p>
+            </div>
               </CardContent>
             </Card>
 

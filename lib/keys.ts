@@ -27,10 +27,10 @@ export function getUserKeys(userId = "default"): Map<string, string> {
 
   // Only read from environment variables (server-side)
   if (typeof process !== "undefined" && process.env) {
-    for (const key of SUPPORTED_KEYS) {
-      const envValue = process.env[key]
-      if (envValue) {
-        keys.set(key, envValue)
+  for (const key of SUPPORTED_KEYS) {
+    const envValue = process.env[key]
+    if (envValue) {
+      keys.set(key, envValue)
       }
     }
   }

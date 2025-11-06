@@ -28,36 +28,13 @@ export async function POST(request: NextRequest) {
     const openrouterKey = userKeys.get("OPENROUTER_API_KEY") || ""
     const aimlKey = userKeys.get("AIML_API_KEY") || ""
 
-    // Try LLM providers in order of preference
-    let llm: LLMAgent | null = null
-    let provider = ""
-
-    if (fireworksKey) {
-      llm = new LLMAgent(fireworksKey, "accounts/fireworks/models/llama-v3p1-70b-instruct", "fireworks")
-      provider = "fireworks"
-    } else if (groqKey) {
-      llm = new LLMAgent(groqKey, "llama-3.3-70b-versatile", "groq")
-      provider = "groq"
-    } else if (openrouterKey) {
-      llm = new LLMAgent(openrouterKey, "meta-llama/llama-3.1-70b-instruct", "openrouter")
-      provider = "openrouter"
-    } else if (aimlKey) {
-      llm = new LLMAgent(aimlKey, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "aiml")
-      provider = "aiml"
-    }
-
-    if (!llm) {
-      return new Response(
-        JSON.stringify({
-          response:
-            "I'm currently unavailable. Please configure an LLM API key (Fireworks, Groq, OpenRouter, or AIML) in the settings to enable chat functionality.",
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      )
-    }
+    // Try LLM providers in order of preference with automatic fallback
+    const providers = [
+      { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
+      { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" },
+      { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" },
+      { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" },
+    ]
 
     // Build context from portfolio if available
     let context = ""
@@ -80,12 +57,39 @@ User question: ${message}
 
 Provide a helpful, concise response (2-3 sentences max). Focus on actionable insights about portfolio management, risk, diversification, or market trends. Be direct and professional.`
 
-    console.log(`[portfolio-agent] [${requestId}] Sending to LLM`)
+    // Try each provider in order until one succeeds
+    let response = ""
+    let lastError: Error | null = null
 
-    // Use the LLM to generate a response
-    const response = await llm.chat(prompt)
+    for (const provider of providers) {
+      if (!provider.key) continue
 
-    console.log(`[portfolio-agent] [${requestId}] LLM response received`)
+      try {
+        console.log(`[portfolio-agent] [${requestId}] Trying ${provider.name}...`)
+        const llm = new LLMAgent(provider.key, provider.model, provider.name as any)
+        response = await llm.chat(prompt)
+        console.log(`[portfolio-agent] [${requestId}] ${provider.name} response received`)
+        break
+      } catch (error) {
+        console.error(`[portfolio-agent] [${requestId}] ${provider.name} failed:`, error)
+        lastError = error instanceof Error ? error : new Error(String(error))
+        // Continue to next provider
+      }
+    }
+
+    if (!response) {
+      return new Response(
+        JSON.stringify({
+          response: lastError
+            ? "I'm currently experiencing issues with my AI providers. Please check your API keys and billing status, or try again later."
+            : "I'm currently unavailable. Please configure an LLM API key (Fireworks, Groq, OpenRouter, or AIML) in the settings to enable chat functionality.",
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      )
+    }
 
     return new Response(JSON.stringify({ response }), {
       status: 200,

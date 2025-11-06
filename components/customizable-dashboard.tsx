@@ -47,7 +47,7 @@ interface CustomizableDashboardProps {
 }
 
 const DEFAULT_WIDGETS: WidgetConfig[] = [
-  { id: "portfolio-overview", name: "Portfolio Overview", description: "Total value and key metrics", enabled: true, order: 0 },
+  { id: "portfolio-overview", name: "Portfolio Overview", description: "Total value and key metrics", enabled: false, order: 0 },
   { id: "ai-intelligence", name: "AI Intelligence Center", description: "Proactive AI recommendations", enabled: true, order: 1 },
   { id: "predictive-analytics", name: "Predictive Analytics", description: "Portfolio forecasts", enabled: true, order: 2 },
   { id: "portfolio-comparison", name: "Portfolio Comparison", description: "Compare with benchmarks", enabled: true, order: 3 },
