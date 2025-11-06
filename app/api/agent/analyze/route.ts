@@ -109,11 +109,15 @@ export async function POST(request: NextRequest) {
           const openrouterKey = userKeys.get("OPENROUTER_API_KEY") || ""
           const aimlKey = userKeys.get("AIML_API_KEY") || ""
 
+          // Try LLM providers in order of preference with automatic fallback
+          // Skip Fireworks first since it's returning 412 (suspended account)
           const providers = [
-            { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
+            // Try other providers first
             { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" },
             { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" },
             { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" },
+            // Try Fireworks last as fallback (in case it gets fixed)
+            { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
           ]
 
           let llmResponse = null

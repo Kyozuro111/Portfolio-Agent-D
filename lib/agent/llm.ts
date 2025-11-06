@@ -56,6 +56,7 @@ DO NOT include any text before or after the JSON. DO NOT wrap in markdown code b
       if (!response.ok) {
         const errorText = await response.text()
         console.error(`[portfolio-agent] ${this.provider} API error response:`, errorText)
+        // Throw error so route can try next provider
         throw new Error(`LLM API error: ${response.status} ${response.statusText}`)
       }
 
@@ -77,8 +78,9 @@ DO NOT include any text before or after the JSON. DO NOT wrap in markdown code b
       console.log(`[portfolio-agent] ${this.provider} analysis successful`)
       return parsed
     } catch (error) {
+      // Re-throw error so route can try next provider in fallback chain
       console.error(`[portfolio-agent] ${this.provider} analysis failed:`, error)
-      return this.getFallbackResponse()
+      throw error
     }
   }
 
@@ -97,6 +99,7 @@ DO NOT include any text before or after the JSON. DO NOT wrap in markdown code b
       if (!response.ok) {
         const errorText = await response.text()
         console.error(`[portfolio-agent] ${this.provider} chat API error:`, errorText)
+        // Throw error so route can try next provider
         throw new Error(`LLM API error: ${response.status}`)
       }
 
@@ -110,8 +113,9 @@ DO NOT include any text before or after the JSON. DO NOT wrap in markdown code b
       console.log(`[portfolio-agent] ${this.provider} chat successful`)
       return content
     } catch (error) {
+      // Re-throw error so route can try next provider in fallback chain
       console.error(`[portfolio-agent] ${this.provider} chat failed:`, error)
-      return "I apologize, but I'm having trouble processing your request right now. Please try again or check your API configuration."
+      throw error
     }
   }
 

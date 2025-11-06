@@ -29,11 +29,15 @@ export async function POST(request: NextRequest) {
     const aimlKey = userKeys.get("AIML_API_KEY") || ""
 
     // Try LLM providers in order of preference with automatic fallback
+    // Skip Fireworks if it's known to be suspended (412 error)
     const providers = [
-      { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
+      // Skip Fireworks if it's consistently failing with 412
+      // { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
       { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" },
       { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" },
       { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" },
+      // Try Fireworks last as fallback (in case it gets fixed)
+      { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
     ]
 
     // Build context from portfolio if available
