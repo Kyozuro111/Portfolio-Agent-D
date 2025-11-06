@@ -27,11 +27,16 @@ export function getUserKeys(userId = "default"): Map<string, string> {
 
   // Only read from environment variables (server-side)
   if (typeof process !== "undefined" && process.env) {
-  for (const key of SUPPORTED_KEYS) {
-    const envValue = process.env[key]
-    if (envValue) {
-      keys.set(key, envValue)
+    for (const key of SUPPORTED_KEYS) {
+      const envValue = process.env[key]
+      if (envValue && envValue.trim() !== "") {
+        keys.set(key, envValue.trim())
       }
+    }
+    
+    // Debug: Log which keys are loaded (without exposing values)
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[portfolio-agent] Loaded ${keys.size} API keys:`, Array.from(keys.keys()).join(", "))
     }
   }
 

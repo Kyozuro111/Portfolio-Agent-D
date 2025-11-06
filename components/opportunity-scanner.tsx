@@ -47,23 +47,59 @@ export function OpportunityScanner({ symbols = [] }: OpportunityScannerProps) {
       }
 
       let opportunitiesResult: any = null
+      let buffer = "" // Buffer for incomplete lines
 
       while (true) {
         const { done, value } = await reader.read()
-        if (done) break
+        if (done) {
+          // Process any remaining buffer
+          if (buffer.trim()) {
+            const lines = buffer.split("\n")
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                try {
+                  const jsonStr = line.slice(6).trim()
+                  if (jsonStr) {
+                    const event = JSON.parse(jsonStr)
+                    if (event.type === "complete" && event.data) {
+                      opportunitiesResult = event.data
+                    }
+                  }
+                } catch (e) {
+                  // Ignore parse errors for incomplete JSON
+                  if (e instanceof SyntaxError && !e.message.includes("Unexpected end")) {
+                    console.error("[portfolio-agent] Failed to parse event:", e)
+                  }
+                }
+              }
+            }
+          }
+          break
+        }
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split("\n")
+        // Decode chunk and append to buffer
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        
+        // Keep last incomplete line in buffer
+        buffer = lines.pop() || ""
 
+        // Process complete lines
         for (const line of lines) {
           if (line.startsWith("data: ")) {
             try {
-              const event = JSON.parse(line.slice(6))
-              if (event.type === "complete" && event.data) {
-                opportunitiesResult = event.data
+              const jsonStr = line.slice(6).trim()
+              if (jsonStr) {
+                const event = JSON.parse(jsonStr)
+                if (event.type === "complete" && event.data) {
+                  opportunitiesResult = event.data
+                }
               }
             } catch (e) {
-              console.error("[portfolio-agent] Failed to parse event:", e)
+              // Ignore parse errors for incomplete JSON
+              if (e instanceof SyntaxError && !e.message.includes("Unexpected end") && !e.message.includes("Unterminated")) {
+                console.error("[portfolio-agent] Failed to parse event:", e)
+              }
             }
           }
         }

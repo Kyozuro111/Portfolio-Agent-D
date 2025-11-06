@@ -105,31 +105,56 @@ export async function POST(req: NextRequest) {
     const result = await executeROMAPlan(plan, tools, ctx)
     console.log(`[portfolio-agent] [${reqId}] ROMA complete`)
 
-    // Distribute free API keys evenly: This route uses AIML (free, unlimited)
-    // Fallback order: OpenRouter -> Groq -> Fireworks (if available)
-    const aimlKey = keys.get("AIML_API_KEY") || ""
+    // Try Fireworks first (user updated key), then fallback to free providers
+    const fireworksKey = keys.get("FIREWORKS_API_KEY") || ""
     const openrouterKey = keys.get("OPENROUTER_API_KEY") || ""
     const groqKey = keys.get("GROQ_API_KEY") || ""
-    const fireworksKey = keys.get("FIREWORKS_API_KEY") || ""
+    const aimlKey = keys.get("AIML_API_KEY") || ""
 
     let analysis = ""
     let model = ""
 
-    // Primary: AIML (free, unlimited)
-    if (aimlKey) {
+    // Primary: Fireworks (user updated key)
+    if (fireworksKey) {
       try {
-        console.log(`[portfolio-agent] [${reqId}] LLM request to AIML with model: meta-llama/Llama-3.3-70B-Instruct-Turbo`)
-        const llmAgent = new LLMAgent(aimlKey, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "aiml")
-        const analysisResponse = await llmAgent.analyze(result)
-        // Convert LLMResponse to text
-        analysis = [
-          ...analysisResponse.insights,
-          ...analysisResponse.actions.map((a) => `Action: ${a.action}. Pros: ${a.pros.join(", ")}. Cons: ${a.cons.join(", ")}`),
-        ].join("\n\n")
-        model = "aiml"
-        console.log(`[portfolio-agent] [${reqId}] AIML analysis successful`)
+        console.log(`[portfolio-agent] [${reqId}] LLM request to fireworks with model: accounts/fireworks/models/llama-v3p1-70b-instruct`)
+        const { text } = await generateText({
+          model: "fireworks/accounts/fireworks/models/llama-v3p1-70b-instruct",
+          prompt: `You are a professional crypto portfolio analyst. Analyze this portfolio data and provide actionable insights in 2-3 concise paragraphs.
+
+Portfolio Data:
+${JSON.stringify(result, null, 2)}
+
+Focus on: risk assessment, diversification quality, and specific recommendations.`,
+          apiKey: fireworksKey,
+        })
+        analysis = text
+        model = "fireworks"
+        console.log(`[portfolio-agent] [${reqId}] fireworks analysis successful`)
       } catch (error) {
-        console.error(`[portfolio-agent] [${reqId}] AIML failed:`, error)
+        console.error(`[portfolio-agent] [${reqId}] fireworks failed:`, error)
+      }
+    }
+
+    // Fallback 1: OpenRouter
+    if (!analysis && openrouterKey) {
+      try {
+        console.log(`[portfolio-agent] [${reqId}] LLM request to openrouter with model: meta-llama/llama-3.1-70b-instruct`)
+        const { text } = await generateText({
+          model: "openrouter/meta-llama/llama-3.1-70b-instruct",
+          prompt: `You are a professional crypto portfolio analyst. Analyze this portfolio data and provide actionable insights in 2-3 concise paragraphs.
+
+Portfolio Data:
+${JSON.stringify(result, null, 2)}
+
+Focus on: risk assessment, diversification quality, and specific recommendations.`,
+          apiKey: openrouterKey,
+        })
+        analysis = text
+        model = "openrouter"
+        console.log(`[portfolio-agent] [${reqId}] openrouter analysis successful`)
+      } catch (error) {
+        console.error(`[portfolio-agent] [${reqId}] openrouter failed:`, error)
       }
     }
 
@@ -177,25 +202,21 @@ Focus on: risk assessment, diversification quality, and specific recommendations
       }
     }
 
-    // Fallback 3: Fireworks (if available, account may be suspended)
-    if (!analysis && fireworksKey) {
+    // Fallback 3: AIML
+    if (!analysis && aimlKey) {
       try {
-        console.log(`[portfolio-agent] [${reqId}] LLM request to fireworks with model: accounts/fireworks/models/llama-v3p1-70b-instruct`)
-        const { text } = await generateText({
-          model: "fireworks/accounts/fireworks/models/llama-v3p1-70b-instruct",
-          prompt: `You are a professional crypto portfolio analyst. Analyze this portfolio data and provide actionable insights in 2-3 concise paragraphs.
-
-Portfolio Data:
-${JSON.stringify(result, null, 2)}
-
-Focus on: risk assessment, diversification quality, and specific recommendations.`,
-          apiKey: fireworksKey,
-        })
-        analysis = text
-        model = "fireworks"
-        console.log(`[portfolio-agent] [${reqId}] fireworks analysis successful`)
+        console.log(`[portfolio-agent] [${reqId}] LLM request to AIML with model: meta-llama/Llama-3.3-70B-Instruct-Turbo`)
+        const llmAgent = new LLMAgent(aimlKey, "meta-llama/Llama-3.3-70B-Instruct-Turbo", "aiml")
+        const analysisResponse = await llmAgent.analyze(result)
+        // Convert LLMResponse to text
+        analysis = [
+          ...analysisResponse.insights,
+          ...analysisResponse.actions.map((a) => `Action: ${a.action}. Pros: ${a.pros.join(", ")}. Cons: ${a.cons.join(", ")}`),
+        ].join("\n\n")
+        model = "aiml"
+        console.log(`[portfolio-agent] [${reqId}] AIML analysis successful`)
       } catch (error) {
-        console.error(`[portfolio-agent] [${reqId}] fireworks failed:`, error)
+        console.error(`[portfolio-agent] [${reqId}] AIML failed:`, error)
       }
     }
 

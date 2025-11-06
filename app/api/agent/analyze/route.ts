@@ -169,14 +169,12 @@ export async function POST(request: NextRequest) {
           const openrouterKey = userKeys.get("OPENROUTER_API_KEY") || ""
           const aimlKey = userKeys.get("AIML_API_KEY") || ""
 
-          // Distribute free API keys evenly: Analyze uses OpenRouter (good for complex analysis)
-          // Fallback order: Groq -> AIML -> Fireworks (if available)
+          // Try Fireworks first if available (user updated key), then fallback to free providers
           const providers = [
-            { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" }, // Primary for analysis (free, unlimited)
-            { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" }, // Fallback 1 (free, fast)
-            { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" }, // Fallback 2 (free)
-            // Fireworks only if others fail (account suspended)
-            { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
+            { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" }, // Try Fireworks first (user updated key)
+            { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" }, // Fallback 1 (free, unlimited)
+            { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" }, // Fallback 2 (free, fast)
+            { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" }, // Fallback 3 (free)
           ]
 
           let llmResponse = null

@@ -46,39 +46,92 @@ export function useAgentStream() {
         throw new Error("No response body")
       }
 
+      let buffer = "" // Buffer for incomplete lines
+
       while (true) {
         const { done, value } = await reader.read()
 
-        if (done) break
+        if (done) {
+          // Process any remaining buffer
+          if (buffer.trim()) {
+            const lines = buffer.split("\n")
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                try {
+                  const jsonStr = line.slice(6).trim()
+                  if (jsonStr) {
+                    const event: AgentEvent = JSON.parse(jsonStr)
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split("\n")
+                    setState((prev) => ({
+                      ...prev,
+                      events: [...prev.events, event],
+                    }))
 
+                    if (event.type === "complete") {
+                      setState((prev) => ({
+                        ...prev,
+                        isRunning: false,
+                        result: event.data,
+                      }))
+                    } else if (event.type === "error") {
+                      setState((prev) => ({
+                        ...prev,
+                        isRunning: false,
+                        error: event.message,
+                      }))
+                    }
+                  }
+                } catch (e) {
+                  // Ignore parse errors for incomplete JSON
+                  if (e instanceof SyntaxError && !e.message.includes("Unexpected end") && !e.message.includes("Unterminated")) {
+                    console.error("[portfolio-agent] Failed to parse event:", e)
+                  }
+                }
+              }
+            }
+          }
+          break
+        }
+
+        // Decode chunk and append to buffer
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split("\n")
+        
+        // Keep last incomplete line in buffer
+        buffer = lines.pop() || ""
+
+        // Process complete lines
         for (const line of lines) {
           if (line.startsWith("data: ")) {
             try {
-              const event: AgentEvent = JSON.parse(line.slice(6))
+              const jsonStr = line.slice(6).trim()
+              if (jsonStr) {
+                const event: AgentEvent = JSON.parse(jsonStr)
 
-              setState((prev) => ({
-                ...prev,
-                events: [...prev.events, event],
-              }))
-
-              if (event.type === "complete") {
                 setState((prev) => ({
                   ...prev,
-                  isRunning: false,
-                  result: event.data,
+                  events: [...prev.events, event],
                 }))
-              } else if (event.type === "error") {
-                setState((prev) => ({
-                  ...prev,
-                  isRunning: false,
-                  error: event.message,
-                }))
+
+                if (event.type === "complete") {
+                  setState((prev) => ({
+                    ...prev,
+                    isRunning: false,
+                    result: event.data,
+                  }))
+                } else if (event.type === "error") {
+                  setState((prev) => ({
+                    ...prev,
+                    isRunning: false,
+                    error: event.message,
+                  }))
+                }
               }
             } catch (e) {
-              console.error("[portfolio-agent] Failed to parse event:", e)
+              // Ignore parse errors for incomplete JSON
+              if (e instanceof SyntaxError && !e.message.includes("Unexpected end") && !e.message.includes("Unterminated")) {
+                console.error("[portfolio-agent] Failed to parse event:", e)
+              }
             }
           }
         }

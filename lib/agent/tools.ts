@@ -806,6 +806,12 @@ export class NewsResearchTool {
     const items: NewsOutput["items"] = []
     const sentiment: Record<string, number> = {}
 
+    // Check if we have at least one news source
+    if (!serperKey && !tavilyKey) {
+      console.warn("[portfolio-agent] No news API keys configured (SERPER_API_KEY or TAVILY_API_KEY required)")
+      return { items: [], sentiment: {} }
+    }
+
     for (const symbol of symbols) {
       try {
         if (serperKey && jinaKey) {
