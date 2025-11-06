@@ -28,15 +28,13 @@ export async function POST(request: NextRequest) {
     const openrouterKey = userKeys.get("OPENROUTER_API_KEY") || ""
     const aimlKey = userKeys.get("AIML_API_KEY") || ""
 
-    // Try LLM providers in order of preference with automatic fallback
-    // Skip Fireworks if it's known to be suspended (412 error)
+    // Distribute free API keys evenly: Chat uses Groq (fast for conversations)
+    // Fallback order: OpenRouter -> AIML -> Fireworks (if available)
     const providers = [
-      // Skip Fireworks if it's consistently failing with 412
-      // { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
-      { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" },
-      { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" },
-      { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" },
-      // Try Fireworks last as fallback (in case it gets fixed)
+      { key: groqKey, model: "llama-3.3-70b-versatile", name: "groq" }, // Primary for chat (fast, free)
+      { key: openrouterKey, model: "meta-llama/llama-3.1-70b-instruct", name: "openrouter" }, // Fallback 1
+      { key: aimlKey, model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "aiml" }, // Fallback 2
+      // Fireworks only if others fail (account suspended)
       { key: fireworksKey, model: "accounts/fireworks/models/llama-v3p1-70b-instruct", name: "fireworks" },
     ]
 
