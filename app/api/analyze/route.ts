@@ -158,28 +158,6 @@ Focus on: risk assessment, diversification quality, and specific recommendations
       }
     }
 
-    // Fallback 1: OpenRouter
-    if (!analysis && openrouterKey) {
-      try {
-        console.log(`[portfolio-agent] [${reqId}] LLM request to openrouter with model: meta-llama/llama-3.1-70b-instruct`)
-        const { text } = await generateText({
-          model: "openrouter/meta-llama/llama-3.1-70b-instruct",
-          prompt: `You are a professional crypto portfolio analyst. Analyze this portfolio data and provide actionable insights in 2-3 concise paragraphs.
-
-Portfolio Data:
-${JSON.stringify(result, null, 2)}
-
-Focus on: risk assessment, diversification quality, and specific recommendations.`,
-          apiKey: openrouterKey,
-        })
-        analysis = text
-        model = "openrouter"
-        console.log(`[portfolio-agent] [${reqId}] openrouter analysis successful`)
-      } catch (error) {
-        console.error(`[portfolio-agent] [${reqId}] openrouter failed:`, error)
-      }
-    }
-
     // Fallback 2: Groq
     if (!analysis && groqKey) {
       try {
