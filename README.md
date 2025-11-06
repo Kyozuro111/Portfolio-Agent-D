@@ -1,3 +1,5 @@
+<img width="1406" height="650" alt="Screenshot 2025-11-06 at 14 57 18" src="https://github.com/user-attachments/assets/b99d34df-4e42-4f49-ac3b-9f0060a1464e" />
+
 # Portfolio Agent
 
 An intelligent, automated portfolio management system powered by AI. Get real-time insights, predictive analytics, and AI-powered recommendations for your cryptocurrency portfolio.
