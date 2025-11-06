@@ -4,7 +4,7 @@
 
 An intelligent, automated portfolio management system powered by AI. Get real-time insights, predictive analytics, and AI-powered recommendations for your cryptocurrency portfolio.
 
-**Built by [Kyozuro](https://github.com/Kyozuro111) for [Sentient](https://sentient.io/)**
+**Built by [Kyozuro](https://github.com/Kyozuro111) for [Sentient](https://x.com/SentientAGI)**
 
 ---
 
