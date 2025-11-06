@@ -1,275 +1,222 @@
 # Portfolio Agent
 
-An intelligent, automated portfolio management system powered by AI. Built with the ROMA Framework and OpenDeepSearch for real-time analysis, risk management, and intelligent rebalancing of cryptocurrency portfolios.
+An intelligent, automated portfolio management system powered by AI. Get real-time insights, predictive analytics, and AI-powered recommendations for your cryptocurrency portfolio.
 
 **Built by [Kyozuro](https://github.com/Kyozuro111) for [Sentient](https://sentient.io/)**
 
 ---
 
-## 🚀 Features
+## 🌟 What is Portfolio Agent?
 
-### Core Capabilities
+Portfolio Agent is your intelligent crypto portfolio assistant that continuously monitors your holdings, analyzes market conditions, and provides actionable recommendations to optimize your portfolio performance. Powered by advanced AI frameworks (ROMA + OpenDeepSearch), it offers automated analysis, risk management, and intelligent rebalancing.
 
-- **🤖 AI-Powered Analysis**: Automated portfolio analysis with real-time risk metrics and health scores
-- **📊 11+ Specialized Tools**: Comprehensive toolkit for portfolio management
-- **🔄 Auto Rebalancing**: Intelligent rebalancing recommendations based on optimal allocation
-- **📈 Predictive Analytics**: 7-day and 30-day portfolio forecasts
-- **📰 Real-time News**: AI-analyzed news with sentiment analysis and portfolio impact scoring
-- **💬 Portfolio Advisor Chat**: Interactive AI chat for portfolio questions and recommendations
-- **🎯 Performance Attribution**: Identify which assets drive your portfolio performance
-- **⚖️ Portfolio Optimization**: AI-driven optimization based on risk profiles
-- **📉 Stress Testing**: Simulate extreme market scenarios
-- **🔍 Opportunity Scanner**: Automatically scan markets for investment opportunities
-- **🎙️ Natural Language Commands**: Control your portfolio using plain English
-- **📱 Customizable Dashboard**: Personalize your dashboard with drag-and-drop widgets
+---
 
-### Advanced Features
+## ✨ Key Features
 
-- **Real-time Price Updates**: Live price ticker with 30-second refresh
-- **Portfolio Snapshots**: Save and compare portfolio states over time
+### 🤖 AI-Powered Portfolio Analysis
+
+- **Automated Risk Assessment**: Real-time calculation of portfolio health scores, volatility, Sharpe ratio, and maximum drawdown
+- **Intelligent Insights**: AI-generated recommendations based on your portfolio composition and market conditions
+- **Predictive Analytics**: 7-day and 30-day portfolio value forecasts with confidence intervals
+- **Performance Attribution**: Identify which assets contribute most to your gains or losses
+
+### 📊 Comprehensive Portfolio Management
+
+- **Auto Rebalancing Advisor**: Automatic detection of portfolio drift with specific buy/sell recommendations
+- **Portfolio Optimization**: AI-driven optimization based on your risk profile (Conservative, Balanced, Aggressive)
+- **Portfolio Comparison**: Compare your performance against benchmarks (BTC-only, ETH-only, 60/40 BTC/ETH)
+- **Stress Testing**: Simulate extreme market scenarios (Black Swan, Liquidity Crisis, Regulatory Shock)
+
+### 📰 Real-time Market Intelligence
+
+- **AI News Impact Analyzer**: Real-time news with AI-analyzed sentiment and portfolio impact scoring
+- **Opportunity Scanner**: Automatically scan markets for investment opportunities based on technical indicators
+- **Price Ticker**: Live price updates for all portfolio assets with 30-second refresh
+- **Market Trends**: Track correlation breakdowns and market movements
+
+### 💬 Interactive AI Assistant
+
+- **Portfolio Advisor Chat**: Ask questions about your portfolio, risk levels, or investment strategies
+- **Natural Language Commands**: Control your portfolio using plain English
+  - "Sell 10% of BTC if it drops below $30,000"
+  - "Alert me when ETH/BTC ratio > 0.06"
+  - "Rebalance to 50% BTC, 30% ETH, 20% SOL"
+- **Voice Commands**: Use voice to interact with your portfolio (coming soon)
+
+### 📈 Advanced Analytics
+
+- **Performance Charts**: Visualize portfolio performance over time with interactive charts
+- **Asset Allocation**: View your portfolio distribution across different asset classes
+- **Risk Metrics Dashboard**: Comprehensive risk analysis with VaR, CVaR, and stress test results
+- **Portfolio Snapshots**: Save and compare portfolio states at different points in time
+
+### 🎨 Customizable Experience
+
+- **Customizable Dashboard**: Enable/disable widgets and reorder them to your preference
 - **Export Functionality**: Export portfolio data in JSON or CSV format
-- **Portfolio Comparison**: Compare performance against benchmarks (BTC, ETH, 60/40)
-- **Voice Commands**: Use voice to control your portfolio (coming soon)
-
----
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 15, React 19
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4, Radix UI, shadcn/ui
-- **AI Framework**: ROMA Agent Framework
-- **News Research**: OpenDeepSearch (Serper + Jina + Tavily)
-- **LLM Providers**: Fireworks, Groq, OpenRouter, AIML
-- **Data Sources**: CoinGecko, CoinMarketCap, Birdeye
-- **Deployment**: Vercel
-
----
-
-## 📋 Prerequisites
-
-- Node.js 18+ or Bun
-- pnpm (recommended) or npm
-- API keys for various services (see Configuration)
+- **Dark/Light Mode**: Toggle between themes for comfortable viewing
+- **Real-time Updates**: Automatic refresh every 5 minutes with manual refresh option
 
 ---
 
 ## 🚀 Getting Started
 
-### Installation
+### Step 1: Access the Platform
 
-1. **Clone the repository**
+Simply visit the Portfolio Agent website and start using it immediately. No installation or setup required.
 
-```bash
-git clone https://github.com/Kyozuro111/Portfolio-Agent-D.git
-cd Portfolio-Agent-D
-```
-
-2. **Install dependencies**
-
-```bash
-pnpm install
-# or
-npm install
-```
-
-3. **Set up environment variables**
-
-Create a `.env.local` file in the root directory:
-
-```env
-# LLM Providers (at least one required)
-FIREWORKS_API_KEY=your_fireworks_key
-GROQ_API_KEY=your_groq_key
-OPENROUTER_API_KEY=your_openrouter_key
-AIML_API_KEY=your_aiml_key
-
-# Price Data Providers (at least one recommended)
-COINGECKO_API_KEY=your_coingecko_key
-COINMARKETCAP_API_KEY=your_coinmarketcap_key
-BIRDEYE_API_KEY=your_birdeye_key
-
-# News Research Providers (at least one required for news feature)
-SERPER_API_KEY=your_serper_key
-JINA_API_KEY=your_jina_key
-TAVILY_API_KEY=your_tavily_key
-```
-
-4. **Run the development server**
-
-```bash
-pnpm dev
-# or
-npm run dev
-```
-
-5. **Open your browser**
-
-Navigate to [http://localhost:3000](http://localhost:3000)
-
----
-
-## 🔑 API Keys Configuration
-
-### Required Keys
-
-**Minimum Setup** (for basic functionality):
-- At least **1 LLM API key** (Fireworks, Groq, OpenRouter, or AIML)
-- At least **1 Price API key** (CoinGecko, CoinMarketCap, or Birdeye)
-- At least **1 News API key** (Serper or Tavily) for news features
-
-### Recommended Setup
-
-**For Full Functionality**:
-- **LLM**: Fireworks (primary) + Groq + OpenRouter + AIML (fallbacks)
-- **Prices**: CoinGecko + CoinMarketCap + Birdeye (for Solana tokens)
-- **News**: Serper + Jina (for content extraction) + Tavily (fallback)
-
-### Getting API Keys
-
-1. **Fireworks AI**: [https://fireworks.ai](https://fireworks.ai)
-2. **Groq**: [https://groq.com](https://groq.com) (Free tier available)
-3. **OpenRouter**: [https://openrouter.ai](https://openrouter.ai) (Free tier available)
-4. **AIML**: [https://aimlapi.com](https://aimlapi.com) (Free tier available)
-5. **CoinGecko**: [https://www.coingecko.com/api](https://www.coingecko.com/api) (Free tier available)
-6. **CoinMarketCap**: [https://coinmarketcap.com/api](https://coinmarketcap.com/api)
-7. **Birdeye**: [https://birdeye.so](https://birdeye.so) (For Solana tokens)
-8. **Serper**: [https://serper.dev](https://serper.dev)
-9. **Jina AI**: [https://jina.ai](https://jina.ai)
-10. **Tavily**: [https://tavily.com](https://tavily.com)
-
----
-
-## 📖 Usage
-
-### Adding Your Portfolio
+### Step 2: Add Your Portfolio
 
 1. Click **"Get Started"** on the landing page
-2. Add your holdings using the portfolio input form
-3. Enter symbol, amount, and optional purchase price/date
-4. Click **"Analyze Portfolio"** to run AI analysis
+2. Use the portfolio input form to add your holdings
+3. Enter:
+   - **Symbol**: Cryptocurrency symbol (e.g., BTC, ETH, SOL)
+   - **Amount**: Quantity you hold
+   - **Purchase Price** (optional): For P/L calculations
+   - **Purchase Date** (optional): For historical tracking
 
-### Using AI Features
+### Step 3: Run AI Analysis
 
-- **Portfolio Advisor Chat**: Click the chat widget (bottom-right) to ask questions
-- **Natural Language Commands**: Use plain English to create conditional orders
-- **Auto Rebalancing**: View recommendations in the Auto Rebalancing Advisor widget
-- **News Impact**: Check the AI News Impact Analyzer for relevant news
-- **Opportunity Scanner**: Scan for market opportunities automatically
+Click **"Analyze Portfolio"** to start the intelligent analysis. The system will:
+- Fetch real-time prices
+- Calculate risk metrics
+- Generate health scores
+- Provide AI-powered insights
+- Recommend actions
 
-### Customizing Dashboard
+### Step 4: Explore Features
 
-1. Click the settings icon (gear) in the top-right
-2. Enable/disable widgets as needed
-3. Drag and drop widgets to reorder
-4. Your preferences are automatically saved
-
----
-
-## 🚢 Deployment
-
-### Vercel (Recommended)
-
-1. **Push to GitHub**
-
-```bash
-git push origin main
-```
-
-2. **Import to Vercel**
-
-- Go to [vercel.com](https://vercel.com)
-- Click "New Project"
-- Import your GitHub repository
-
-3. **Configure Environment Variables**
-
-- Go to Project Settings → Environment Variables
-- Add all your API keys
-- Redeploy the project
-
-4. **Deploy**
-
-Vercel will automatically deploy on every push to `main` branch.
-
-### Other Platforms
-
-The project can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- Render
-- AWS Amplify
+- **View Dashboard**: See all your portfolio metrics at a glance
+- **Check News**: Review relevant news articles affecting your holdings
+- **Chat with Advisor**: Ask questions using the chat widget (bottom-right)
+- **Scan Opportunities**: Discover new investment opportunities
+- **Compare Performance**: See how you're doing vs. benchmarks
 
 ---
 
-## 🏗️ Project Structure
+## 💡 How It Works
 
-```
-portfolio-agent/
-├── app/                    # Next.js app directory
-│   ├── api/               # API routes
-│   │   ├── agent/         # AI agent endpoints
-│   │   ├── analyze/       # Analysis endpoints
-│   │   ├── news/          # News research endpoint
-│   │   └── prices/        # Price data endpoint
-│   ├── docs/              # Documentation page
-│   └── page.tsx           # Main page
-├── components/            # React components
-│   ├── ui/                # shadcn/ui components
-│   └── ...                # Feature components
-├── lib/                   # Utility libraries
-│   ├── agent/             # ROMA agent framework
-│   │   ├── llm.ts         # LLM integration
-│   │   ├── roma.ts        # ROMA runner
-│   │   └── tools.ts       # Agent tools
-│   └── keys.ts            # API key management
-├── hooks/                 # React hooks
-└── public/                # Static assets
-```
+### Automated Analysis Process
+
+1. **Data Collection**: Fetches real-time prices from multiple sources (CoinGecko, CoinMarketCap, Birdeye)
+2. **Risk Calculation**: Computes volatility, Sharpe ratio, maximum drawdown, and VaR
+3. **Health Scoring**: Generates portfolio health score based on diversification and risk metrics
+4. **AI Analysis**: Uses advanced LLM models to generate insights and recommendations
+5. **News Integration**: Analyzes relevant news with sentiment scoring
+6. **Recommendations**: Provides actionable suggestions for optimization
+
+### Intelligent Features
+
+- **24/7 Monitoring**: Continuously tracks your portfolio and market conditions
+- **Automatic Updates**: Refreshes data every 5 minutes automatically
+- **Smart Fallbacks**: Uses multiple data sources to ensure reliability
+- **Context-Aware**: AI understands your portfolio composition for personalized advice
 
 ---
 
-## 🔧 Development
+## 🎯 Use Cases
 
-### Available Scripts
+### For Active Traders
 
-```bash
-# Development server
-pnpm dev
+- Monitor portfolio risk in real-time
+- Get alerts on significant price movements
+- Discover new trading opportunities
+- Optimize allocation for maximum returns
 
-# Production build
-pnpm build
+### For Long-term Investors
 
-# Start production server
-pnpm start
+- Track portfolio health over time
+- Understand performance drivers
+- Get rebalancing recommendations
+- Compare against benchmarks
 
-# Lint code
-pnpm lint
-```
+### For Portfolio Managers
 
-### Code Style
-
-- TypeScript strict mode enabled
-- ESLint for code quality
-- Prettier for formatting (recommended)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- Comprehensive risk analysis
+- Performance attribution
+- Stress testing capabilities
+- Export data for reporting
 
 ---
 
-## 📝 License
+## 📱 Features Overview
 
-This project is private and proprietary. All rights reserved.
+### Dashboard Widgets
+
+- **Portfolio Overview**: Total value, P/L, and key metrics
+- **AI Intelligence Center**: Proactive recommendations and insights
+- **Predictive Analytics**: Portfolio forecasts and scenarios
+- **Portfolio Comparison**: Benchmark comparisons
+- **Auto Rebalancing Advisor**: Rebalancing recommendations
+- **Performance Attribution**: Asset contribution analysis
+- **Portfolio Optimization**: AI-driven optimization
+- **News Impact**: Real-time news analysis
+- **Stress Testing**: Scenario simulations
+- **Opportunity Scanner**: Market opportunities
+- **Natural Language Commands**: Voice and text commands
+
+### Quick Actions
+
+- **Export Portfolio**: Download data in JSON or CSV
+- **Save Snapshot**: Capture current portfolio state
+- **Compare Snapshots**: View changes over time
+- **Refresh Data**: Manual update trigger
+- **View Documentation**: Access detailed feature guides
+
+---
+
+## 🔒 Privacy & Security
+
+- All portfolio data is stored locally in your browser
+- No data is sent to external servers except for:
+  - Price data (public APIs)
+  - News articles (public sources)
+  - AI analysis (anonymized portfolio data)
+- API keys are managed server-side and never exposed
+- No account registration required
+
+---
+
+## 📚 Documentation
+
+Click **"View Documentation"** in the header to access comprehensive guides on:
+- Portfolio Health Scores
+- Risk Metrics Explained
+- Auto Rebalancing System
+- News Impact Analysis
+- Predictive Insights
+- Natural Language Commands
+- And much more...
+
+---
+
+## 🌐 Browser Support
+
+- Chrome/Edge (recommended)
+- Firefox
+- Safari
+- Opera
+
+Works best on desktop browsers. Mobile support coming soon.
+
+---
+
+## 💬 Support
+
+For questions, feedback, or issues:
+- Check the documentation page
+- Use the Portfolio Advisor chat for help
+- Review the FAQ section
+
+---
+
+## 🎨 Built With
+
+- **ROMA Framework**: Plan-based execution for intelligent agents
+- **OpenDeepSearch**: Real-time news research with sentiment analysis
+- **Advanced AI Models**: Multiple LLM providers for reliable insights
+- **Real-time Data**: Multiple price and news sources
 
 ---
 
@@ -277,25 +224,8 @@ This project is private and proprietary. All rights reserved.
 
 **Kyozuro**
 
-- GitHub: [@Kyozuro111](https://github.com/Kyozuro111)
-- Built for: [Sentient](https://sentient.io/)
+Built for the [Sentient](https://sentient.io/) community.
 
 ---
 
-## 🙏 Acknowledgments
-
-- **ROMA Framework**: Plan-based execution system for intelligent agents
-- **OpenDeepSearch**: Real-time news research with sentiment analysis
-- **shadcn/ui**: Beautiful and accessible UI components
-- **Vercel**: Hosting and deployment platform
-
----
-
-## 📞 Support
-
-For issues, questions, or contributions, please open an issue on GitHub.
-
----
-
-**Made with ❤️ by Kyozuro for the Sentient community**
-
+**Made with ❤️ by Kyozuro for intelligent portfolio management**
