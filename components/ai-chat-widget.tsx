@@ -73,10 +73,16 @@ export function AIChatWidget() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to get response")
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `HTTP ${response.status}: Failed to get response`)
       }
 
       const data = await response.json()
+
+      // Check if response has error or response field
+      if (data.error) {
+        throw new Error(data.message || data.error || "Unknown error")
+      }
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -87,11 +93,14 @@ export function AIChatWidget() {
 
       setMessages((prev) => [...prev, aiMessage])
     } catch (error) {
-      console.error("Chat error:", error)
+      console.error("[portfolio-agent] Chat error:", error)
+      const errorMsg = error instanceof Error ? error.message : "Unknown error"
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "I'm having trouble connecting right now. Please check your API configuration in settings.",
+        content: errorMsg.includes("AI providers") || errorMsg.includes("API key")
+          ? errorMsg
+          : "I'm having trouble connecting right now. Please check your API configuration in settings. Make sure at least one LLM API key (Fireworks, Groq, OpenRouter, or AIML) is configured in your environment variables.",
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, errorMessage])

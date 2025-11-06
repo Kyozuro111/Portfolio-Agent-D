@@ -87,6 +87,8 @@ export function AINewsImpactEnhanced({ holdings = [] }: AINewsImpactEnhancedProp
       }
 
       let newsOutput: any = null
+      let hasError = false
+      let errorMessage = ""
 
       while (true) {
         const { done, value } = await reader.read()
@@ -101,6 +103,10 @@ export function AINewsImpactEnhanced({ holdings = [] }: AINewsImpactEnhancedProp
               const event = JSON.parse(line.slice(6))
               if (event.type === "complete" && event.data) {
                 newsOutput = event.data
+              } else if (event.type === "error") {
+                hasError = true
+                errorMessage = event.message || "Failed to fetch news"
+                console.error("[portfolio-agent] News API error:", errorMessage)
               }
             } catch (e) {
               console.error("[portfolio-agent] Failed to parse event:", e)
@@ -109,7 +115,14 @@ export function AINewsImpactEnhanced({ holdings = [] }: AINewsImpactEnhancedProp
         }
       }
 
-      if (newsOutput && newsOutput.items) {
+      if (hasError) {
+        console.error("[portfolio-agent] News fetch failed:", errorMessage)
+        setNews([])
+        setFilteredNews([])
+        return
+      }
+
+      if (newsOutput && newsOutput.items && Array.isArray(newsOutput.items) && newsOutput.items.length > 0) {
         const newsItems: NewsItem[] = newsOutput.items
           .filter((item: any) => {
             return item.symbols.some((symbol: string) => portfolioSymbols.includes(symbol.toUpperCase()))
@@ -142,9 +155,16 @@ export function AINewsImpactEnhanced({ holdings = [] }: AINewsImpactEnhancedProp
         setNews(newsItems)
         setFilteredNews(newsItems)
         setLastUpdate(new Date())
+      } else {
+        // No news items found
+        console.log("[portfolio-agent] No news items returned from API")
+        setNews([])
+        setFilteredNews([])
       }
     } catch (error) {
       console.error("[portfolio-agent] Failed to fetch news:", error)
+      setNews([])
+      setFilteredNews([])
     } finally {
       setLoading(false)
     }
